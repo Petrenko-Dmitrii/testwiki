@@ -1,0 +1,27 @@
+name: Monitor Wiki Changes
+
+on:
+  push:
+    paths:
+      - 'wiki/**'
+
+jobs:
+  check-author:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Get last commit author
+      id: get_author
+      run: |
+        echo "::set-output name=author::$(git log -1 --pretty=format:'%an')"
+
+    - name: Check if author is allowed
+      run: |
+        if [[ "${{ steps.get_author.outputs.author }}" != "allowed_username" ]]; then
+          echo "Unauthorized user"
+          exit 1
+        fi
+      shell: bash
