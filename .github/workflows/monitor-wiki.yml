@@ -19,9 +19,18 @@ jobs:
         echo "::set-output name=author::$(git log -1 --pretty=format:'%an')"
 
     - name: Check if author is allowed
+      id: check_author
       run: |
-        if [[ "${{ steps.get_author.outputs.author }}" != "allowed_username" ]]; then
+        ALLOWED_USERS=("allowed_user1" "allowed_user2")
+        AUTHOR="${{ steps.get_author.outputs.author }}"
+        if [[ ! " ${ALLOWED_USERS[@]} " =~ " ${AUTHOR} " ]]; then
           echo "Unauthorized user"
           exit 1
         fi
       shell: bash
+
+    - name: Revert changes if unauthorized
+      if: ${{ failure() }}
+      run: |
+        git reset --hard HEAD~1
+        git push --force
