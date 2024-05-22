@@ -7,7 +7,7 @@ on:
 
 jobs:
   check-author:
-    runs-on: ubuntu-latest
+    runs-on: gollum
 
     steps:
     - name: Checkout repository
